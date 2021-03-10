@@ -3,6 +3,11 @@ name = "bevycheck"
 version = "0.1.0"
 authors = ["Jakob Hellermann <hellermann@sipgate.com>"]
 edition = "2018"
+repository = "https://github.com/jakobhellermann/bevycheck"
+license = "MIT"
+description = "Helpful bevy error messages by proc-macro"
+keywords = ["bevy", "errors", "debug"]
+categories = ["development-tools::procedural-macro-helpers", "game-development"]
 
 [lib]
 proc-macro = true
