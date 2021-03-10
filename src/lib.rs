@@ -88,13 +88,19 @@ fn check_system_param_ty(ty: &syn::Type) -> bool {
                 }
                 false
             }
-            _ => todo!(),
+            _ => {
+                emit_warning!(ty.span(), "possibly invalid system parameter"; note = "bevycheck can't figure out whether this is a valid system param");
+                true
+            }
         },
         syn::Type::Tuple(tuple) => tuple.elems.iter().fold(false, |mut acc, ty| {
             acc |= check_system_param_ty(ty);
             acc
         }),
-        _ => todo!(),
+        _ => {
+            emit_warning!(ty.span(), "possibly invalid system parameter"; note = "bevycheck can't figure out whether this is a valid system param");
+            true
+        }
     }
 }
 
