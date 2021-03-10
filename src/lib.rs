@@ -64,6 +64,7 @@ fn check_system_fn_arg(arg: &syn::FnArg) -> bool {
 
             match name.as_str() {
                 "Query" => has_error |= check_query_generics(last_segment),
+                "QuerySet" => has_error |= check_query_set_generics(last_segment),
                 other if VALID_BARE_TYPES.contains(&other) => {}
                 _ => {
                     emit_error!(
@@ -89,6 +90,28 @@ fn check_system_fn_arg(arg: &syn::FnArg) -> bool {
     }
 
     has_error
+}
+fn check_query_set_generics(path: &syn::PathSegment) -> bool {
+    let queries = match first_generic(path) {
+        syn::Type::Tuple(tuple) => tuple.elems.iter(),
+        _ => {
+            emit_error!(path.span(), "invalid QuerySet"; note = "the first parameter of `QuerySet` should be a tuple of queries");
+            return true;
+        }
+    };
+
+    queries
+        .map(|ty| match named_type(ty, "Query") {
+            Some(query) => check_query_generics(query),
+            None => {
+                emit_error!(path.span(), "invalid QuerySet"; note = "the first parameter of `QuerySet` should be a tuple of queries");
+                true
+            }
+        })
+        .fold(false, |mut acc, item| {
+            acc |= item;
+            acc
+        })
 }
 
 fn check_query_generics(path: &syn::PathSegment) -> bool {
@@ -139,7 +162,7 @@ fn check_query_type(ty: &syn::Type) -> bool {
             let name = last_segment.ident.to_string();
 
             match name.as_str() {
-                "Option" => return check_query_type(option_type(last_segment)),
+                "Option" => return check_query_type(first_generic(last_segment)),
                 other if VALID_QUERY_TYPES.contains(&other) => {}
                 _ => {
                     emit_error!(
@@ -190,7 +213,7 @@ fn check_query_filter_type(ty: &syn::Type) -> bool {
     false
 }
 
-fn option_type(last_segment: &syn::PathSegment) -> &syn::Type {
+fn first_generic(last_segment: &syn::PathSegment) -> &syn::Type {
     let first_generic = match &last_segment.arguments {
         syn::PathArguments::AngleBracketed(args) => {
             args.args.iter().next().and_then(|arg| match arg {
@@ -202,12 +225,20 @@ fn option_type(last_segment: &syn::PathSegment) -> &syn::Type {
     };
     match first_generic {
         Some(generic) => generic,
-        None => abort!(
-            last_segment.span(),
-            "`Option` should have one generic argument"
-        ),
+        None => abort!(last_segment.span(), "should have one generic argument"),
     }
 }
+
+fn named_type<'a>(ty: &'a syn::Type, name: &str) -> Option<&'a syn::PathSegment> {
+    match ty {
+        syn::Type::Path(path) => {
+            let last_segment = path.path.segments.last().unwrap();
+            (last_segment.ident == name).then(|| last_segment)
+        }
+        _ => None,
+    }
+}
+
 fn check_tuple_or_single<F: Fn(&syn::Type) -> bool>(ty: &syn::Type, f: F) -> bool {
     match ty {
         syn::Type::Tuple(tuple) => tuple.elems.iter().fold(false, |mut acc, item| {
