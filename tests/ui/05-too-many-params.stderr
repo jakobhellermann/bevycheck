@@ -1,0 +1,14 @@
+error: too many system parameters
+  --> $DIR/05-too-many-params.rs:7:1
+   |
+7  | / fn system(
+8  | |     _: Res<Foo>,
+9  | |     _: Res<Foo>,
+10 | |     _: Res<Foo>,
+...  |
+19 | |     _: Res<Foo>,
+20 | | ) {
+   | |_^
+   |
+   = note: only up to 12 parameters are supported
+   = help: try bundling some parameters into tuples or a `#[derive(SystemParam)]` struct

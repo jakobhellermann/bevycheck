@@ -32,6 +32,12 @@ pub fn system(_attr: TokenStream, tokens: TokenStream) -> TokenStream {
 fn check_system_fn(signature: &syn::Signature) -> bool {
     let mut has_error = false;
 
+    let arg_count = signature.inputs.len();
+    if arg_count >= 12 {
+        emit_error!(signature.span(), "too many system parameters"; note = "only up to 12 parameters are supported"; help = "try bundling some parameters into tuples or a `#[derive(SystemParam)]` struct");
+        return true;
+    }
+
     for fn_arg in &signature.inputs {
         has_error |= check_system_fn_arg(fn_arg);
     }

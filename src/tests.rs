@@ -5,4 +5,5 @@ fn ui() {
     t.compile_fail("tests/ui/02-commands.rs");
     t.compile_fail("tests/ui/03-arbitrary-type.rs");
     t.compile_fail("tests/ui/04-query-invalid.rs");
+    t.compile_fail("tests/ui/05-too-many-params.rs");
 }
