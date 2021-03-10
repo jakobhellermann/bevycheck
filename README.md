@@ -1,11 +1,20 @@
 # bevycheck
 
-## **DISCLAIMER: this crate only supports the bevy `main` branch**
-
 Bevycheck helps debug bevy errors by adding procedural macros which display nice error messages.
 
+### Disclaimer
+`bevycheck` can't figure out all valid system parameters, for example, custom types with `#[derive(SystemParam)]` won't work. If you find a type that should work but get's reported, please file an issue.
 
-### Invalid Systems
+This crate is meant as a temporary measure to figure out why something doesn't compile, but shouldn't be kept in the final code.
+
+### Bevy support table
+
+|bevy|bevy-inspector-egui|
+|---|---|
+|*main*|*unreleased*|
+
+
+## Invalid Systems
 
 If you get an error like 
 - `no method named "system" found for fn item "for<'r, 's> fn(Query<'r, &'s Component>, Commands) {my_system}" in the current scope "my_system" is a function, perhaps you wish to call it`

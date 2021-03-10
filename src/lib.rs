@@ -1,6 +1,5 @@
 use proc_macro::TokenStream;
 use proc_macro_error::{abort, emit_error, emit_warning, proc_macro_error};
-use quote::quote;
 use syn::{__private::ToTokens, spanned::Spanned};
 
 const VALID_BARE_TYPES: &[&str] = &[
@@ -18,15 +17,16 @@ const VALID_BARE_TYPES: &[&str] = &[
 #[proc_macro_attribute]
 #[proc_macro_error]
 pub fn system(_attr: TokenStream, tokens: TokenStream) -> TokenStream {
-    let item = syn::parse::<syn::ItemFn>(tokens).unwrap();
+    let mut item = syn::parse::<syn::ItemFn>(tokens).unwrap();
     let has_error = check_system_fn(&item.sig);
 
-    if has_error {
-        let name = &item.sig.ident;
-        let return_ty = item.sig.output;
-        return (quote!(fn #name() #return_ty {})).into();
-    }
+    item.block = Box::new(syn::parse_quote!({
+        panic!("#[bevycheck] should be removed after figuring out the error");
+    }));
 
+    if has_error {
+        item.sig.inputs = syn::parse_quote!();
+    }
     item.into_token_stream().into()
 }
 
