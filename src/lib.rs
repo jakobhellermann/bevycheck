@@ -25,7 +25,7 @@ pub fn system(_attr: TokenStream, tokens: TokenStream) -> TokenStream {
     }));
 
     if has_error {
-        item.sig.inputs = syn::parse_quote!();
+        item.sig.inputs = syn::punctuated::Punctuated::new();
     }
     item.into_token_stream().into()
 }
