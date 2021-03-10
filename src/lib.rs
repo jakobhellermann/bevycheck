@@ -2,18 +2,6 @@ use proc_macro::TokenStream;
 use proc_macro_error::{abort, emit_error, emit_warning, proc_macro_error};
 use syn::{__private::ToTokens, spanned::Spanned};
 
-const VALID_BARE_TYPES: &[&str] = &[
-    "Commands",
-    "Res",
-    "ResMut",
-    "Local",
-    "Query",
-    "QuerySet",
-    "DrawContext",
-    "EventReader",
-    "EventWriter",
-];
-
 #[proc_macro_attribute]
 #[proc_macro_error]
 pub fn system(_attr: TokenStream, tokens: TokenStream) -> TokenStream {
@@ -49,32 +37,45 @@ fn check_system_fn(signature: &syn::Signature) -> bool {
 const ERR_MSG: &str = "invalid system parameter";
 
 fn check_system_fn_arg(arg: &syn::FnArg) -> bool {
-    let mut has_error = false;
-
-    let ty = match arg {
+    match arg {
         syn::FnArg::Receiver(receiver) => {
             emit_error!(receiver.span(), ERR_MSG);
-            return true;
+            true
         }
-        syn::FnArg::Typed(pat_type) => &*pat_type.ty,
-    };
+        syn::FnArg::Typed(pat_type) => check_system_param_ty(&*pat_type.ty),
+    }
+}
+
+fn check_system_param_ty(ty: &syn::Type) -> bool {
+    const VALID_BARE_TYPES: &[&str] = &[
+        "Commands",
+        "Res",
+        "ResMut",
+        "Local",
+        "Query",
+        "QuerySet",
+        "DrawContext",
+        "EventReader",
+        "EventWriter",
+        "In,",
+    ];
+
     match ty {
         syn::Type::Path(path) => {
             let last_segment = path.path.segments.last().unwrap();
             let name = last_segment.ident.to_string();
 
             match name.as_str() {
-                "Query" => has_error |= check_query_generics(last_segment),
-                "QuerySet" => has_error |= check_query_set_generics(last_segment),
-                "In" => {}
-                other if VALID_BARE_TYPES.contains(&other) => {}
+                "Query" => check_query_generics(last_segment),
+                "QuerySet" => check_query_set_generics(last_segment),
+                other if VALID_BARE_TYPES.contains(&other) => false,
                 _ => {
                     emit_warning!(
                         ty.span(), "possibly invalid system parameter";
                         note = "bevycheck can't figure out whether `{}` is a valid system param", name;
                         help = "to use it as a resource, use `Res<{}>` or `ResMut<{}>`", name, name
                     );
-                    has_error = true;
+                    true
                 }
             }
         }
@@ -82,17 +83,21 @@ fn check_system_fn_arg(arg: &syn::FnArg) -> bool {
             syn::Type::Path(path) => {
                 let last_segment = path.path.segments.last().unwrap();
                 if last_segment.ident == "Commands" {
-                    has_error = true;
                     emit_error!(ty.span(), ERR_MSG; help = "use `mut commands: Commands`");
+                    return true;
                 }
+                false
             }
             _ => todo!(),
         },
+        syn::Type::Tuple(tuple) => tuple.elems.iter().fold(false, |mut acc, ty| {
+            acc |= check_system_param_ty(ty);
+            acc
+        }),
         _ => todo!(),
     }
-
-    has_error
 }
+
 fn check_query_set_generics(path: &syn::PathSegment) -> bool {
     let queries = match first_generic(path) {
         syn::Type::Tuple(tuple) => tuple.elems.iter(),
