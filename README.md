@@ -1,5 +1,7 @@
 # bevycheck
 
+## **DISCLAIMER: this crate only supports the bevy `main` branch**
+
 Bevycheck helps debug bevy errors by adding procedural macros which display nice error messages.
 
 
