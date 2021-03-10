@@ -1,0 +1,7 @@
+error: invalid system parameter
+ --> $DIR/02-commands.rs:5:14
+  |
+5 | fn system(_: &mut Commands) {}
+  |              ^^^^^^^^^^^^^
+  |
+  = help: use `mut commands: Commands`
