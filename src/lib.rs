@@ -1,5 +1,5 @@
 use proc_macro::TokenStream;
-use proc_macro_error::{abort, emit_error, proc_macro_error};
+use proc_macro_error::{abort, emit_error, emit_warning, proc_macro_error};
 use quote::quote;
 use syn::{__private::ToTokens, spanned::Spanned};
 
@@ -69,9 +69,9 @@ fn check_system_fn_arg(arg: &syn::FnArg) -> bool {
                 "In" => {}
                 other if VALID_BARE_TYPES.contains(&other) => {}
                 _ => {
-                    emit_error!(
-                        ty.span(), ERR_MSG;
-                        note = "cannot use type `{}` directly", name;
+                    emit_warning!(
+                        ty.span(), "possibly invalid system parameter";
+                        note = "bevycheck can't figure out whether `{}` is a valid system param", name;
                         help = "to use it as a resource, use `Res<{}>` or `ResMut<{}>`", name, name
                     );
                     has_error = true;

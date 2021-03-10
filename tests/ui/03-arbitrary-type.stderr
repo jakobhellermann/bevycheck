@@ -1,8 +1,0 @@
-error: invalid system parameter
- --> $DIR/03-arbitrary-type.rs:7:14
-  |
-7 | fn system(_: Foo) {}
-  |              ^^^
-  |
-  = note: cannot use type `Foo` directly
-  = help: to use it as a resource, use `Res<Foo>` or `ResMut<Foo>`
