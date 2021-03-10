@@ -3,6 +3,15 @@ use proc_macro_error::{emit_error, proc_macro_error};
 use quote::quote;
 use syn::{__private::ToTokens, spanned::Spanned};
 
+const VALID_BARE_TYPES: &[&str] = &[
+    "Commands",
+    "Res",
+    "ResMut",
+    "Query",
+    "EventReader",
+    "EventWriter",
+];
+
 #[proc_macro_attribute]
 #[proc_macro_error]
 pub fn system(_attr: TokenStream, tokens: TokenStream) -> TokenStream {
@@ -41,7 +50,17 @@ fn check_system_fn_arg(arg: &syn::FnArg) -> bool {
     };
     match ty {
         syn::Type::Path(path) => {
-            let _last_segment = path.path.segments.last().unwrap();
+            let last_segment = path.path.segments.last().unwrap();
+            let name = last_segment.ident.to_string();
+
+            if !VALID_BARE_TYPES.contains(&name.as_str()) {
+                emit_error!(
+                    ty.span(), ERR_MSG;
+                    note = "cannot use type `{}` directly", name;
+                    help = "to use it as a resource, use `Res<{}>` or `ResMut<{}>`", name, name
+                );
+                has_error = true;
+            }
         }
         syn::Type::Reference(reference) => match &*reference.elem {
             syn::Type::Path(path) => {
