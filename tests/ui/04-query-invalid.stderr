@@ -1,0 +1,17 @@
+error: invalid query parameter
+ --> $DIR/04-query-invalid.rs:8:29
+  |
+8 | fn system(_: Query<(Entity, Foo, Option<&Foo>, Flags<Foo>), Bar>) {}
+  |                             ^^^
+  |
+  = note: `Foo` is not a valid query type
+  = help: if you want to query for a resource, use `&Foo` or `&mut Foo`
+
+error: invalid query filter
+ --> $DIR/04-query-invalid.rs:8:61
+  |
+8 | fn system(_: Query<(Entity, Foo, Option<&Foo>, Flags<Foo>), Bar>) {}
+  |                                                             ^^^
+  |
+  = note: `Bar` is not a valid query filter
+  = help: if you want to check for Bar's existence, use `With<Bar>``
