@@ -23,7 +23,8 @@ pub fn system(_attr: TokenStream, tokens: TokenStream) -> TokenStream {
 
     if has_error {
         let name = &item.sig.ident;
-        return (quote!(fn #name() {})).into();
+        let return_ty = item.sig.output;
+        return (quote!(fn #name() #return_ty {})).into();
     }
 
     item.into_token_stream().into()
@@ -65,6 +66,7 @@ fn check_system_fn_arg(arg: &syn::FnArg) -> bool {
             match name.as_str() {
                 "Query" => has_error |= check_query_generics(last_segment),
                 "QuerySet" => has_error |= check_query_set_generics(last_segment),
+                "In" => {}
                 other if VALID_BARE_TYPES.contains(&other) => {}
                 _ => {
                     emit_error!(
