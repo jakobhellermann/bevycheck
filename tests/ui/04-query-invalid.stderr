@@ -5,7 +5,7 @@ error: invalid query parameter
   |                             ^^^
   |
   = note: `Foo` is not a valid query type
-  = help: if you want to query for a resource, use `&Foo` or `&mut Foo`
+  = help: if you want to query for a component, use `&Foo` or `&mut Foo`
 
 error: invalid query filter
  --> $DIR/04-query-invalid.rs:8:61

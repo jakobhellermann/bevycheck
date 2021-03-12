@@ -5,4 +5,4 @@ error: invalid query parameter
    |               ^^^^^^^^^
    |
    = note: `Transform` is not a valid query type
-   = help: if you want to query for a resource, use `&Transform` or `&mut Transform`
+   = help: if you want to query for a component, use `&Transform` or `&mut Transform`
