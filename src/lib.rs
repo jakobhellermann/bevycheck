@@ -181,7 +181,7 @@ fn check_query_type(ty: &syn::Type) -> bool {
                     emit_error!(
                         path.span(), QUERY_ERROR_MSG;
                         note = "`{}` is not a valid query type", name;
-                        help = "if you want to query for a resource, use `&{}` or `&mut {}`", name, name
+                        help = "if you want to query for a component, use `&{}` or `&mut {}`", name, name
                     );
                     return true;
                 }
