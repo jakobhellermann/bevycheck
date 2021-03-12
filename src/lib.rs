@@ -114,7 +114,7 @@ fn check_query_set_generics(path: &syn::PathSegment) -> bool {
     };
 
     queries
-        .map(|ty| match named_type(ty, "Query") {
+        .map(|ty| match type_with_name(ty, "Query") {
             Some(query) => check_query_generics(query),
             None => {
                 emit_error!(path.span(), "invalid QuerySet"; note = "the first parameter of `QuerySet` should be a tuple of queries");
@@ -219,6 +219,25 @@ fn check_query_filter_type(ty: &syn::Type) -> bool {
                     help = "if you want to check for {}'s existence, use `With<{}>``", name, name;
                 );
                 return true;
+            } else {
+                let generic = first_generic(last_segment);
+                let inner_name = match named_type(generic) {
+                    Some(component) => component.ident.to_string(),
+                    None => {
+                        emit_error!(
+                            path.span(), QUERY_ERROR_MSG;
+                            note = "`{}` should be used like `{}<Component>", name, name;
+                        );
+                        return true;
+                    }
+                };
+                if VALID_QUERY_FILTER_TYPES.contains(&inner_name.as_str()) {
+                    emit_error!(
+                        path.span(), QUERY_ERROR_MSG;
+                        note = "`{}` should be used like `{}<Component>", name, name;
+                    );
+                    return true;
+                }
             }
         }
         _ => {}
@@ -242,14 +261,17 @@ fn first_generic(last_segment: &syn::PathSegment) -> &syn::Type {
     }
 }
 
-fn named_type<'a>(ty: &'a syn::Type, name: &str) -> Option<&'a syn::PathSegment> {
+fn named_type<'a>(ty: &'a syn::Type) -> Option<&'a syn::PathSegment> {
     match ty {
         syn::Type::Path(path) => {
             let last_segment = path.path.segments.last().unwrap();
-            (last_segment.ident == name).then(|| last_segment)
+            Some(last_segment)
         }
         _ => None,
     }
+}
+fn type_with_name<'a>(ty: &'a syn::Type, name: &str) -> Option<&'a syn::PathSegment> {
+    named_type(ty).filter(|segment| segment.ident == name)
 }
 
 fn check_tuple_or_single<F: Fn(&syn::Type) -> bool>(ty: &syn::Type, f: F) -> bool {

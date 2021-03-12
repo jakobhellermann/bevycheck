@@ -7,4 +7,5 @@ fn ui() {
     t.compile_fail("tests/ui/04-query-invalid.rs");
     t.compile_fail("tests/ui/05-too-many-params.rs");
     t.compile_fail("tests/ui/06-query-set.rs");
+    t.compile_fail("tests/ui/07-query-with-added.rs");
 }
