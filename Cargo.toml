@@ -2,6 +2,7 @@
 name = "bevycheck"
 version = "0.1.0"
 authors = ["Jakob Hellermann <hellermann@sipgate.com>"]
+readme = "README.md"
 edition = "2018"
 repository = "https://github.com/jakobhellermann/bevycheck"
 license = "MIT"
@@ -16,7 +17,7 @@ proc-macro = true
 syn = "1.0"
 quote = "1.0"
 proc-macro-error = "1.0"
-bevy = { git = "https://github.com/bevyengine/bevy", default-features = false }
+bevy = { version = "0.5", default-features = false }
 
 [dev-dependencies]
 trybuild = "1.0"

@@ -55,3 +55,9 @@ error: could not compile `bevycheck`
 
 To learn more, run the command again with --verbose.
 ```
+
+## Bevy support table
+
+|bevy|beyvcheck|
+|---|---|
+|0.5|0.1|
