@@ -7,13 +7,6 @@ Bevycheck helps debug bevy errors by adding procedural macros which display nice
 
 This crate is meant as a temporary measure to figure out why something doesn't compile, but shouldn't be kept in the final code.
 
-### Bevy support table
-
-|bevy|bevy-inspector-egui|
-|---|---|
-|*main*|*unreleased*|
-
-
 ## Invalid Systems
 
 If you get an error like 
