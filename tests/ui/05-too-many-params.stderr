@@ -6,9 +6,9 @@ error: too many system parameters
 9  | |     _: Res<Foo>,
 10 | |     _: Res<Foo>,
 ...  |
-19 | |     _: Res<Foo>,
-20 | | ) {
+24 | |     _: Res<Foo>,
+25 | | ) {
    | |_^
    |
-   = note: only up to 12 parameters are supported
+   = note: only up to 16 parameters are supported
    = help: try bundling some parameters into tuples or a `#[derive(SystemParam)]` struct

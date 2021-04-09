@@ -8,13 +8,25 @@ pub fn system(_attr: TokenStream, tokens: TokenStream) -> TokenStream {
     let mut item = syn::parse::<syn::ItemFn>(tokens).unwrap();
     let has_error = check_system_fn(&item.sig);
 
-    item.block = Box::new(syn::parse_quote!({
-        panic!("#[bevycheck] should be removed after figuring out the error");
-    }));
+    let parameters = item.sig.inputs.iter().filter_map(|input| match input {
+        syn::FnArg::Receiver(_) => None,
+        syn::FnArg::Typed(pat_ty) => Some(&pat_ty.ty),
+    });
+    let check_params = (!has_error).then(|| {
+        quote::quote! { #(is_system_param::<#parameters>();)* }
+    });
 
-    if has_error {
-        item.sig.inputs = syn::punctuated::Punctuated::new();
-    }
+    let block = syn::parse_quote! {
+        {
+            fn is_system_param<T: bevy::ecs::system::SystemParam>() {}
+            #check_params
+            panic!("#[bevycheck] should be removed after figuring out the error");
+        }
+    };
+
+    item.block = Box::new(block);
+
+    item.sig.inputs = syn::punctuated::Punctuated::new();
     item.into_token_stream().into()
 }
 
@@ -22,8 +34,8 @@ fn check_system_fn(signature: &syn::Signature) -> bool {
     let mut has_error = false;
 
     let arg_count = signature.inputs.len();
-    if arg_count >= 12 {
-        emit_error!(signature.span(), "too many system parameters"; note = "only up to 12 parameters are supported"; help = "try bundling some parameters into tuples or a `#[derive(SystemParam)]` struct");
+    if arg_count >= 16 {
+        emit_error!(signature.span(), "too many system parameters"; note = "only up to 16 parameters are supported"; help = "try bundling some parameters into tuples or a `#[derive(SystemParam)]` struct");
         return true;
     }
 
@@ -75,7 +87,7 @@ fn check_system_param_ty(ty: &syn::Type) -> bool {
                         note = "bevycheck can't figure out whether `{}` is a valid system param", name;
                         help = "to use it as a resource, use `Res<{}>` or `ResMut<{}>`", name, name
                     );
-                    true
+                    false
                 }
             }
         }
@@ -90,7 +102,7 @@ fn check_system_param_ty(ty: &syn::Type) -> bool {
             }
             _ => {
                 emit_warning!(ty.span(), "possibly invalid system parameter"; note = "bevycheck can't figure out whether this is a valid system param");
-                true
+                false
             }
         },
         syn::Type::Tuple(tuple) => tuple.elems.iter().fold(false, |mut acc, ty| {
@@ -99,7 +111,7 @@ fn check_system_param_ty(ty: &syn::Type) -> bool {
         }),
         _ => {
             emit_warning!(ty.span(), "possibly invalid system parameter"; note = "bevycheck can't figure out whether this is a valid system param");
-            true
+            false
         }
     }
 }

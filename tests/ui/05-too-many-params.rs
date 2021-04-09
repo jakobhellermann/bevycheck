@@ -17,6 +17,11 @@ fn system(
     _: Res<Foo>,
     _: Res<Foo>,
     _: Res<Foo>,
+    _: Res<Foo>,
+    _: Res<Foo>,
+    _: Res<Foo>,
+    _: Res<Foo>,
+    _: Res<Foo>,
 ) {
 }
 
