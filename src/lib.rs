@@ -54,11 +54,11 @@ fn check_system_fn_arg(arg: &syn::FnArg) -> bool {
             emit_error!(receiver.span(), ERR_MSG);
             true
         }
-        syn::FnArg::Typed(pat_type) => check_system_param_ty(&*pat_type.ty),
+        syn::FnArg::Typed(pat_type) => check_system_param_ty(Some(&*pat_type.pat), &*pat_type.ty),
     }
 }
 
-fn check_system_param_ty(ty: &syn::Type) -> bool {
+fn check_system_param_ty(pat: Option<&syn::Pat>, ty: &syn::Type) -> bool {
     const VALID_BARE_TYPES: &[&str] = &[
         "Commands",
         "Res",
@@ -91,22 +91,29 @@ fn check_system_param_ty(ty: &syn::Type) -> bool {
                 }
             }
         }
-        syn::Type::Reference(reference) => match &*reference.elem {
-            syn::Type::Path(path) => {
+        syn::Type::Reference(reference) => {
+            if let syn::Type::Path(path) = &*reference.elem {
                 let last_segment = path.path.segments.last().unwrap();
                 if last_segment.ident == "Commands" {
                     emit_error!(ty.span(), ERR_MSG; help = "use `mut commands: Commands`");
                     return true;
                 }
-                false
+                if last_segment.ident == "Assets" {
+                    let generic_ty = first_generic(last_segment).into_token_stream().to_string();
+                    let pat = match pat {
+                        Some(pat) => pat.into_token_stream().to_string(),
+                        None => "assets".to_string(),
+                    };
+                    emit_error!(ty.span(), ERR_MSG; help = "use `mut {}: ResMut<Assets<{}>>`", pat, generic_ty);
+                    return true;
+                }
             }
-            _ => {
-                emit_warning!(ty.span(), "possibly invalid system parameter"; note = "bevycheck can't figure out whether this is a valid system param");
-                false
-            }
-        },
+
+            emit_warning!(ty.span(), "possibly invalid system parameter"; note = "bevycheck can't figure out whether this is a valid system param");
+            false
+        }
         syn::Type::Tuple(tuple) => tuple.elems.iter().fold(false, |mut acc, ty| {
-            acc |= check_system_param_ty(ty);
+            acc |= check_system_param_ty(None, ty);
             acc
         }),
         _ => {
