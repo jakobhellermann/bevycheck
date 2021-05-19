@@ -25,3 +25,8 @@ trybuild = "1.0"
 # [[test]]
 # name = "try"
 # path = "tests/ui/test.rs"
+
+
+[[example]]
+name = "test"
+test = false

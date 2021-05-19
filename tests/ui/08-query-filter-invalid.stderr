@@ -1,0 +1,8 @@
+error: unknown query filter
+  --> $DIR/08-query-filter-invalid.rs:11:41
+   |
+11 | fn some_system(query: Query<Entity, Or<(Player, SpawnPlayer)>>) {}
+   |                                         ^^^^^^
+   |
+   = note: `Player` is not a known query filter
+   = help: if you want to check for Player's existence, use `With<Player>``

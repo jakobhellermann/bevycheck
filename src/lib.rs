@@ -217,11 +217,11 @@ fn check_query_type(ty: &syn::Type) -> bool {
 
 fn check_query_filter_type(ty: &syn::Type) -> bool {
     const QUERY_ERROR_MSG: &str = "invalid query filter";
-    const VALID_QUERY_FILTER_TYPES: &[&str] = &[
+    // types like Added<T>, Changed<T> which filter based on a generic component
+    const VALID_COMPONENT_QUERY_FILTER_TYPES: &[&str] = &[
         "Added",
         "Changed",
         "Mutated",
-        "Or",
         "With",
         "WithBundle",
         "Without",
@@ -231,14 +231,8 @@ fn check_query_filter_type(ty: &syn::Type) -> bool {
         syn::Type::Path(path) => {
             let last_segment = path.path.segments.last().unwrap();
             let name = last_segment.ident.to_string();
-            if !VALID_QUERY_FILTER_TYPES.contains(&name.as_str()) {
-                emit_error!(
-                    path.span(), QUERY_ERROR_MSG;
-                    note = "`{}` is not a valid query filter", name;
-                    help = "if you want to check for {}'s existence, use `With<{}>``", name, name;
-                );
-                return true;
-            } else {
+
+            if VALID_COMPONENT_QUERY_FILTER_TYPES.contains(&name.as_str()) {
                 let generic = first_generic(last_segment);
                 let inner_name = match named_type(generic) {
                     Some(component) => component.ident.to_string(),
@@ -250,14 +244,47 @@ fn check_query_filter_type(ty: &syn::Type) -> bool {
                         return true;
                     }
                 };
-                if VALID_QUERY_FILTER_TYPES.contains(&inner_name.as_str()) {
+                if VALID_COMPONENT_QUERY_FILTER_TYPES.contains(&inner_name.as_str()) {
                     emit_error!(
                         path.span(), QUERY_ERROR_MSG;
                         note = "`{}` should be used like `{}<Component>", name, name;
                     );
                     return true;
                 }
+            } else if name == "Or" {
+                let generic = first_generic(last_segment);
+                let tuple = match generic {
+                    syn::Type::Tuple(tuple) => tuple,
+                    _ => {
+                        emit_error!(
+                            generic.span(), QUERY_ERROR_MSG;
+                            note = "`Or` filters expect a tuple of query filters as their generic argument",
+                        );
+                        return true;
+                    }
+                };
+                return check_tuple(tuple, check_query_filter_type);
+            } else {
+                emit_error!(
+                    path.span(), "unknown query filter";
+                    note = "`{}` is not a known query filter", name;
+                    help = "if you want to check for {}'s existence, use `With<{}>``", name, name;
+                );
+                return true;
             }
+        }
+        syn::Type::Reference(reference) => {
+            let name = named_type(&reference.elem).map(|path| path.ident.to_string());
+            let (name, type_name) = match &name {
+                Some(name) => (name.as_str(), name.as_str()),
+                None => ("a component", "Component"),
+            };
+
+            emit_error!(
+                reference.span(), QUERY_ERROR_MSG;
+                help = "if you want to check for {}'s existence, use `With<{}>``", name, type_name;
+            );
+            return true;
         }
         _ => {}
     }
@@ -295,12 +322,12 @@ fn type_with_name<'a>(ty: &'a syn::Type, name: &str) -> Option<&'a syn::PathSegm
 
 fn check_tuple_or_single<F: Fn(&syn::Type) -> bool>(ty: &syn::Type, f: F) -> bool {
     match ty {
-        syn::Type::Tuple(tuple) => tuple.elems.iter().fold(false, |mut acc, item| {
-            acc |= f(item);
-            acc
-        }),
+        syn::Type::Tuple(tuple) => check_tuple(tuple, f),
         ty => f(ty),
     }
+}
+fn check_tuple<F: Fn(&syn::Type) -> bool>(tuple: &syn::TypeTuple, f: F) -> bool {
+    tuple.elems.iter().fold(false, |acc, item| acc || f(item))
 }
 
 #[cfg(test)]

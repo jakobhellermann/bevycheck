@@ -7,11 +7,11 @@ error: invalid query parameter
   = note: `Foo` is not a valid query type
   = help: if you want to query for a component, use `&Foo` or `&mut Foo`
 
-error: invalid query filter
+error: unknown query filter
  --> $DIR/04-query-invalid.rs:8:61
   |
 8 | fn system(_: Query<(Entity, Foo, Option<&Foo>, Flags<Foo>), Bar>) {}
   |                                                             ^^^
   |
-  = note: `Bar` is not a valid query filter
+  = note: `Bar` is not a known query filter
   = help: if you want to check for Bar's existence, use `With<Bar>``
