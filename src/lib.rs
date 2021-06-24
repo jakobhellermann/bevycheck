@@ -156,9 +156,13 @@ fn check_query_generics(path: &syn::PathSegment) -> bool {
         }
         syn::PathArguments::AngleBracketed(args) => {
             let mut args = args.args.iter();
-            let query = match args.next() {
-                Some(syn::GenericArgument::Type(ty)) => ty,
-                _ => {
+            let query_type = args.find_map(|arg| match arg {
+                syn::GenericArgument::Type(ty) => Some(ty),
+                _ => None,
+            });
+            let query_type = match query_type {
+                Some(ty) => ty,
+                None => {
                     emit_error!(path.span(), ERR_MSG; note = "the query should have generic type parameters");
                     return true;
                 }
@@ -171,7 +175,7 @@ fn check_query_generics(path: &syn::PathSegment) -> bool {
                     return true;
                 }
             };
-            (query, filter)
+            (query_type, filter)
         }
     };
 
@@ -293,12 +297,10 @@ fn check_query_filter_type(ty: &syn::Type) -> bool {
 
 fn first_generic(last_segment: &syn::PathSegment) -> &syn::Type {
     let first_generic = match &last_segment.arguments {
-        syn::PathArguments::AngleBracketed(args) => {
-            args.args.iter().next().and_then(|arg| match arg {
-                syn::GenericArgument::Type(ty) => Some(ty),
-                _ => None,
-            })
-        }
+        syn::PathArguments::AngleBracketed(args) => args.args.iter().find_map(|arg| match arg {
+            syn::GenericArgument::Type(ty) => Some(ty),
+            _ => None,
+        }),
         _ => None,
     };
     match first_generic {
