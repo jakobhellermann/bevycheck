@@ -211,6 +211,9 @@ fn check_query_type(ty: &syn::Type) -> bool {
             }
         }
         syn::Type::Reference(_) => {}
+        syn::Type::Paren(ty_paren) => {
+            return check_query_type(&ty_paren.elem);
+        }
         ty => {
             emit_error!(ty.span(), QUERY_ERROR_MSG; note = "not a valid query parameter");
             return true;
