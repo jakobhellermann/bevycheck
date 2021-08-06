@@ -2,6 +2,8 @@
 
 Bevycheck helps debug bevy errors by adding procedural macros which display nice error messages.
 
+## If you want a proper linter with type information, also check out https://github.com/MinerSebas/bevy_lint
+
 ### Disclaimer
 `bevycheck` can't figure out all valid system parameters, for example, custom types with `#[derive(SystemParam)]` won't work. If you find a type that should work but get's reported, please file an issue.
 
