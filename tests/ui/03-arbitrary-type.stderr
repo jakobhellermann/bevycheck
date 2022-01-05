@@ -1,5 +1,5 @@
 warning: possibly invalid system parameter
- --> $DIR/03-arbitrary-type.rs:7:14
+ --> tests/ui/03-arbitrary-type.rs:7:14
   |
 7 | fn system(_: Foo) {}
   |              ^^^
@@ -8,9 +8,14 @@ warning: possibly invalid system parameter
   = help: to use it as a resource, use `Res<Foo>` or `ResMut<Foo>`
 
 error[E0277]: the trait bound `Foo: SystemParam` is not satisfied
- --> $DIR/03-arbitrary-type.rs:7:14
+ --> tests/ui/03-arbitrary-type.rs:7:14
   |
-6 | #[bevycheck::system]
-  | -------------------- required by this bound in `is_system_param`
 7 | fn system(_: Foo) {}
   |              ^^^ the trait `SystemParam` is not implemented for `Foo`
+  |
+note: required by a bound in `is_system_param`
+ --> tests/ui/03-arbitrary-type.rs:6:1
+  |
+6 | #[bevycheck::system]
+  | ^^^^^^^^^^^^^^^^^^^^ required by this bound in `is_system_param`
+  = note: this error originates in the attribute macro `bevycheck::system` (in Nightly builds, run with -Z macro-backtrace for more info)
