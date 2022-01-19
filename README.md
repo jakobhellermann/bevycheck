@@ -55,4 +55,5 @@ To learn more, run the command again with --verbose.
 
 |bevy|beyvcheck|
 |---|---|
+|0.6|0.2|
 |0.5|0.1|
