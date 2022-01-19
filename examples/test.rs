@@ -1,7 +1,7 @@
 /*use bevy::prelude::*;
 
 fn main() {
-    // App::build().add_system(some_system.system());
+    // App::new().add_system(some_system.system());
 }
 
 struct Player;

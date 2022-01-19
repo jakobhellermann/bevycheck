@@ -3,7 +3,7 @@ name = "bevycheck"
 version = "0.1.4"
 authors = ["Jakob Hellermann <hellermann@sipgate.com>"]
 readme = "README.md"
-edition = "2018"
+edition = "2021"
 repository = "https://github.com/jakobhellermann/bevycheck"
 license = "MIT"
 description = "Helpful bevy error messages by proc-macro"
@@ -17,7 +17,7 @@ proc-macro = true
 syn = "1.0"
 quote = "1.0"
 proc-macro-error = "1.0"
-bevy = { version = "0.5", default-features = false }
+bevy = { version = "0.6", default-features = false }
 
 [dev-dependencies]
 trybuild = "1.0"

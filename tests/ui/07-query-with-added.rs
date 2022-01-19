@@ -7,5 +7,5 @@ struct Foo;
 fn system(_: Query<&Foo, With<Added<Foo>>>) {}
 
 fn main() {
-    App::build().add_system(system.system()).run();
+    App::new().add_system(system.system()).run();
 }
