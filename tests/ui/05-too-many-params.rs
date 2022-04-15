@@ -26,5 +26,5 @@ fn system(
 }
 
 fn main() {
-    system.system();
+    IntoSystem::into_system(system);
 }

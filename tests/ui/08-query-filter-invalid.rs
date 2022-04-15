@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 
 fn main() {
-    some_system.system();
+    IntoSystem::into_system(some_system);
 }
 
 struct Player;

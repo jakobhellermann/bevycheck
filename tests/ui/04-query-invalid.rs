@@ -8,5 +8,5 @@ struct Bar;
 fn system(_: Query<(Entity, Foo, Option<&Foo>, Flags<Foo>), Bar>) {}
 
 fn main() {
-    system.system();
+    IntoSystem::into_system(system);
 }

@@ -7,5 +7,5 @@ struct Foo;
 fn system(_: Foo) {}
 
 fn main() {
-    system.system();
+    IntoSystem::into_system(system);
 }

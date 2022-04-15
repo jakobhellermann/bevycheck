@@ -1,5 +1,5 @@
 error: invalid query parameter
- --> $DIR/04-query-invalid.rs:8:29
+ --> tests/ui/04-query-invalid.rs:8:29
   |
 8 | fn system(_: Query<(Entity, Foo, Option<&Foo>, Flags<Foo>), Bar>) {}
   |                             ^^^
@@ -8,7 +8,7 @@ error: invalid query parameter
   = help: if you want to query for a component, use `&Foo` or `&mut Foo`
 
 error: unknown query filter
- --> $DIR/04-query-invalid.rs:8:61
+ --> tests/ui/04-query-invalid.rs:8:61
   |
 8 | fn system(_: Query<(Entity, Foo, Option<&Foo>, Flags<Foo>), Bar>) {}
   |                                                             ^^^

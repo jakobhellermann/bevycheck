@@ -1,5 +1,5 @@
 error: too many system parameters
-  --> $DIR/05-too-many-params.rs:7:1
+  --> tests/ui/05-too-many-params.rs:7:1
    |
 7  | / fn system(
 8  | |     _: Res<Foo>,

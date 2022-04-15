@@ -5,5 +5,5 @@ use bevy::prelude::*;
 fn system(_: &mut Commands) {}
 
 fn main() {
-    system.system();
+    IntoSystem::into_system(system);
 }

@@ -1,5 +1,5 @@
 error: invalid system parameter
- --> $DIR/02-commands.rs:5:14
+ --> tests/ui/02-commands.rs:5:14
   |
 5 | fn system(_: &mut Commands) {}
   |              ^^^^^^^^^^^^^

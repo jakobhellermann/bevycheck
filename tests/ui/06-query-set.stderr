@@ -1,5 +1,5 @@
 error: invalid query parameter
-  --> $DIR/06-query-set.rs:10:15
+  --> tests/ui/06-query-set.rs:10:15
    |
 10 |         Query<Transform, With<Foo>>,
    |               ^^^^^^^^^

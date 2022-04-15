@@ -7,5 +7,5 @@ struct Foo;
 fn system(_: Commands, _: Res<Foo>, _: (EventWriter<Foo>, EventReader<Foo>)) {}
 
 fn main() {
-    system.system();
+    IntoSystem::into_system(system);
 }

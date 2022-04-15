@@ -1,5 +1,5 @@
 error: invalid query filter
- --> $DIR/07-query-with-added.rs:7:26
+ --> tests/ui/07-query-with-added.rs:7:26
   |
 7 | fn system(_: Query<&Foo, With<Added<Foo>>>) {}
   |                          ^^^^^^^^^^^^^^^^
