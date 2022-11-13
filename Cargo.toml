@@ -1,6 +1,6 @@
 [package]
 name = "bevycheck"
-version = "0.3.0"
+version = "0.4.0"
 authors = ["Jakob Hellermann <hellermann@sipgate.com>"]
 readme = "README.md"
 edition = "2021"
