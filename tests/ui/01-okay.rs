@@ -1,6 +1,7 @@
 #![allow(unused)]
 use bevy::prelude::*;
 
+#[derive(Resource)]
 struct Foo;
 
 #[bevycheck::system]
