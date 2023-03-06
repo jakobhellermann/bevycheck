@@ -17,11 +17,11 @@ error[E0277]: the trait bound `Foo: SystemParam` is not satisfied
             &'a Archetypes
             &'a Bundles
             &'a Entities
+            &'a RemovedComponentEvents
             &'a bevy::ecs::component::Components
-            &'w World
+            &World
             ()
             (P0, P1)
-            (P0, P1, P2)
           and $N others
 note: required by a bound in `is_system_param`
  --> tests/ui/03-arbitrary-type.rs:6:1
