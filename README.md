@@ -46,7 +46,7 @@ To learn more, run the command again with --verbose.
 
 ## Bevy support table
 
-|bevy|beyvcheck|
+|bevy|bevycheck|
 |---|---|
 |0.10|0.5|
 |0.9|0.4|
