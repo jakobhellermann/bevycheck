@@ -1,10 +1,15 @@
 #![allow(unused)]
 use bevy::prelude::*;
 
-#[bevycheck::system]
-fn system(_: &mut Commands) {}
+#[derive(Component)]
+struct Component;
+
+#[derive(Resource)]
+struct Resource;
+
+// #[bevycheck::system]
+fn system(commands: Commands, query: Query<&Component>) {}
 
 fn main() {
-    IntoSystem::into_system(system);
+    App::new().add_system(system).run();
 }
-

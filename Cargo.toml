@@ -19,7 +19,7 @@ quote = "1.0"
 
 [dev-dependencies]
 trybuild = "1.0"
-# bevy = { version = "0.10", default-features = false }
+bevy = { version = "0.10", default-features = false }
 
 # [[test]]
 # name = "try"
