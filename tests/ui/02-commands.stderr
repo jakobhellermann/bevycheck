@@ -1,7 +1,17 @@
-error: invalid system parameter
+error[E0277]: the trait bound `&mut bevy::prelude::Commands<'_, '_>: SystemParam` is not satisfied
  --> tests/ui/02-commands.rs:5:14
   |
 5 | fn system(_: &mut Commands) {}
-  |              ^^^^^^^^^^^^^
+  |              ^^^^^^^^^^^^^ the trait `SystemParam` is not implemented for `&mut bevy::prelude::Commands<'_, '_>`
   |
-  = help: use `mut commands: Commands`
+note: required by a bound in `is_system_param`
+ --> tests/ui/02-commands.rs:4:1
+  |
+4 | #[bevycheck::system]
+  | ^^^^^^^^^^^^^^^^^^^^ required by this bound in `is_system_param`
+  = note: this error originates in the attribute macro `bevycheck::system` (in Nightly builds, run with -Z macro-backtrace for more info)
+help: consider removing the leading `&`-reference
+  |
+5 - fn system(_: &mut Commands) {}
+5 + fn system(_: Commands) {}
+  |

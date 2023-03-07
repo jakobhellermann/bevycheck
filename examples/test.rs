@@ -1,14 +1,10 @@
-/*use bevy::prelude::*;
+#![allow(unused)]
+use bevy::prelude::*;
+
+#[bevycheck::system]
+fn system(_: &mut Commands) {}
 
 fn main() {
-    // App::new().add_system(some_system.system());
+    IntoSystem::into_system(system);
 }
 
-struct Player;
-struct SpawnPlayer;
-struct Test<T>(T);
-// #[bevycheck::system]
-// fn some_system(query: Query<Entity, Or<(Player, SpawnPlayer)>>) {}
-*/
-
-fn main() {}

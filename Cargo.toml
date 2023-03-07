@@ -14,18 +14,16 @@ categories = ["development-tools::procedural-macro-helpers", "game-development"]
 proc-macro = true
 
 [dependencies]
-syn = "1.0"
+syn = { version = "1.0", default-features = false, features = ["full", "parsing", "proc-macro", "printing"] }
 quote = "1.0"
-proc-macro-error = "1.0"
-bevy = { version = "0.10", default-features = false }
 
 [dev-dependencies]
 trybuild = "1.0"
+# bevy = { version = "0.10", default-features = false }
 
 # [[test]]
 # name = "try"
 # path = "tests/ui/test.rs"
-
 
 [[example]]
 name = "test"

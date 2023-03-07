@@ -1,12 +1,3 @@
-warning: possibly invalid system parameter
- --> tests/ui/03-arbitrary-type.rs:7:14
-  |
-7 | fn system(_: Foo) {}
-  |              ^^^
-  |
-  = note: bevycheck can't figure out whether `Foo` is a valid system param
-  = help: to use it as a resource, use `Res<Foo>` or `ResMut<Foo>`
-
 error[E0277]: the trait bound `Foo: SystemParam` is not satisfied
  --> tests/ui/03-arbitrary-type.rs:7:14
   |
